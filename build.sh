@@ -23,7 +23,7 @@ buildtime="$(date -u +%Y%m%d%H%M%S)";
 echo " ";
 echo "--       Minimal MicroG Build Script        --";
 echo "--     The Essentials only MicroG pack      --";
-modname="MinMicroG";
+MODNAME="MinMicroG";
 
 for bin in cp find grep mv rm sed zip; do
   command -v "$bin" >/dev/null || abort "No $bin found";
@@ -87,6 +87,7 @@ for file in "src/META-INF" "INSTALL.md" "LICENSE" "README.md"; do
   cp -Rf "$workdir/$file" "$tmpdir/";
 done;
 
+
 for object in $stuff $stuff_util; do
   found="";
   for realobject in "$resdldir/$object" "$resdir/$object"; do
@@ -110,6 +111,9 @@ for object in $stuff_arch $stuff_sdk $stuff_arch_sdk; do
   [ "$found" ] || echo "ERROR: object not found ($object)";
 done;
 
+cp -f "$workdir/src/customize.sh" "$tmpdir"
+. "$tmpdir/defconf"
+echo "$modprop" > "$tmpdir/module.prop"
 # Pre build actions
 
 pre_build_actions;
@@ -133,7 +137,7 @@ echo " ";
 echo " - Copying zip to releases...";
 
 mkdir -p "$reldir";
-mv -f "$tmpdir/release.zip" "$reldir/$modname-$variant-$ver-$buildtime.zip" || abort "Move failed";
+mv -f "$tmpdir/release.zip" "$reldir/$MODNAME-$variant-$ver-$buildtime.zip" || abort "Move failed";
 
 # Done
 

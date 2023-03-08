@@ -95,46 +95,45 @@ microg_cleanup() {
 # Generate and install an addon.d script
 addon_install() {
 
-  [ "$magisk" = "no" ] || return 0;
-  [ "$addond_file" ] && [ -e "$filedir/util/script-addon.sh" ] || return 1;
+  [ "$MAGISK" = "false" ] || return 0;
+  [ "$addond_file" ] && [ -e "$FILEDIR/util/script-addon.sh" ] || return 1;
 
   log " ";
   log "POST-INSTALL: Installing addon.d script";
 
   addond="$addond_file";
-  mkdir -p "$(dirname "$root/$addond")";
-  touch "$root/$addond";
-  perm 0 0 0755 0644 "$(dirname "$root/$addond")";
-  chcon -hR 'u:object_r:system_file:s0' "$(dirname "$root/$addond")";
+  mkdir -p "$(dirname "$ROOT/$addond")";
+  touch "$ROOT/$addond";
+  perm 0 0 0755 0644 "$(dirname "$ROOT/$addond")";
+  chcon -hR 'u:object_r:system_file:s0' "$(dirname "$ROOT/$addond")";
 
-  cat "$filedir/util/script-addon.sh" > "$root/$addond";
-  echo "$stuff" "$stuff_arch" "$stuff_sdk" "$stuff_arch_sdk" "$addond_file" "$init_file" | sed 's| |\n|g' | sort -u > "$filedir/util/INSTALLLIST";
-  echo "$stuff_debloat" | sed 's| |\n|g' | sort -u > "$filedir/util/DEBLOATLIST";
-  sed -i -e "/@INSTALLLIST@/r $filedir/util/INSTALLLIST" -e "/@INSTALLLIST@/d" "$root/$addond";
-  sed -i -e "/@DEBLOATLIST@/r $filedir/util/DEBLOATLIST" -e "/@DEBLOATLIST@/d" "$root/$addond";
+  cat "$FILEDIR/util/script-addon.sh" > "$ROOT/$addond";
+  echo "$stuff" "$stuff_arch" "$stuff_sdk" "$stuff_arch_sdk" "$addond_file" "$init_file" | sed 's| |\n|g' | sort -u > "$FILEDIR/util/INSTALLLIST";
+  echo "$stuff_debloat" | sed 's| |\n|g' | sort -u > "$FILEDIR/util/DEBLOATLIST";
+  sed -i -e "/@INSTALLLIST@/r $FILEDIR/util/INSTALLLIST" -e "/@INSTALLLIST@/d" "$ROOT/$addond";
+  sed -i -e "/@DEBLOATLIST@/r $FILEDIR/util/DEBLOATLIST" -e "/@DEBLOATLIST@/d" "$ROOT/$addond";
 
 }
 
 # Place an init script
 initscript_install() {
 
-  [ "$init_file" ] && [ -e "$filedir/util/script-init.sh" ] || return 1;
+  [ "$init_file" ] && [ -e "$FILEDIR/util/script-init.sh" ] || return 1;
 
   log " ";
   log "POST-INSTALL: Installing init script";
-
-  if [ "$magisk" = "yes" ]; then
-    init="/service.sh";
-    touch "$root/$init";
-    chmod 0777 "$root/$init";
-  elif [ "$magisk" = "no" ]; then
-    init="$init_file";
-    mkdir -p "$(dirname "$root/$init")";
-    touch "$root/$init";
-    perm 0 0 0755 0777 "$(dirname "$root/$init")";
-    chcon -hR 'u:object_r:system_file:s0' "$(dirname "$root/$init")";
+  if [ "$MAGISK" = "true" ]; then
+    INIT="/service.sh";
+    touch "$ROOT/$INIT";
+    chmod 0777 "$ROOT/$INIT";
+  elif [ "$" = "false" ]; then
+    INIT="$init_file";
+    mkdir -p "$(dirname "$ROOT/$INIT")";
+    touch "$ROOT/$INIT";
+    perm 0 0 0755 0777 "$(dirname "$ROOT/$INIT")";
+    chcon -hR 'u:object_r:system_file:s0' "$(dirname "$ROOT/$INIT")";
   fi;
 
-  cat "$filedir/util/script-init.sh" > "$root/$init";
+  cat "$FILEDIR/util/script-init.sh" > "$ROOT/$INIT";
 
 }

@@ -1,0 +1,71 @@
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  id-token: "write"
+  contents: "write"
+  packages: "write"
+  pull-requests: "read"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: signature verification
+        run: |
+          error() {
+            echo " ";
+            echo "!!! FATAL: $1";
+            exit 1;
+          }
+          
+          git clone "https://github.com/FriendlyNeighborhoodShane/MinMicroG-abuse-CI" "MinMicroG-resdl";
+          (
+            cd "./MinMicroG-resdl" || error "could not cd";
+            git fetch origin "refs/volatile/current:current";
+            git checkout "current";
+            git reset;
+          )
+          mkdir "./releases";
+          echo " ";
+          {
+            echo " --- MinMicroG autobuild logs --- ";
+            echo " ";
+            echo "Date: $name $date";
+            echo "System: $(uname -a)";
+          } | tee "./releases/build-$date.log";
+          ln -frs "./MinMicroG-resdl/system" "./MinMicroG-resdl/util" "./resdl/";
+          cert="$(curl -fs "https://api.github.com/repos/FriendlyNeighborhoodShane/MinMicroG_releases/releases" | jq -r ".[].assets[].browser_download_url" | grep "certs.tar.gz$" | head -n1)";
+          [ "$cert" ] && {
+            {
+              echo " ";
+              echo "Cert archive found at $cert"
+            } | tee -a "./releases/build-$date.log";
+            (
+              cd "./MinMicroG-resdl/util/certs" || error "could not cd";
+              rm -rf ./*;
+              curl -fL "$cert" | tar xz;
+            )
+          }
+      - name: build
+        run: |
+          chmod +x ./update.sh
+          chmod +x ./build.sh
+          ./update.sh
+          ./build.sh all
+
+      - name: "Upload Release Assets"
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: false
+          files: |
+            ./releases/*
+
+          
+      
+

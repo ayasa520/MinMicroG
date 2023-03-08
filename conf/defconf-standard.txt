@@ -6,7 +6,7 @@ verc="2111";
 date="02 february, 2022";
 minsdk="19";
 
-modprop="id=$modname
+modprop="id=$MODNAME
 name=Minimal MicroG Pack $variant Edition
 version=$ver
 versionCode=$verc
@@ -178,7 +178,7 @@ post_build_actions() {
 
 pre_install_actions() {
 
-  . "$filedir/util/func-defconf.sh";
+  . "$FILEDIR/util/func-defconf.sh";
   user_conf;
   microg_cleanup;
   return 0;
@@ -209,5 +209,5 @@ post_uninstall_actions() {
 }
 
 mark_file="/data/.mmg";
-addond_file="/system/addon.d/10-$modname.sh";
-init_file="/system/etc/init.d/10-$modname";
+addond_file="/system/addon.d/10-$MODNAME.sh";
+init_file="/system/etc/init.d/10-$MODNAME";
