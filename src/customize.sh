@@ -164,6 +164,7 @@ if [ "$ABI32" = "x86" ]; then
     LIBARCHES="x86 armeabi-v7a armeabi"
     if [ "$IS64BIT" = "true" ]; then
         LIBARCHES="x86_64 $LIBARCHES"
+        ARCH="x86_64"
     fi
 elif [ "$ABI32" = "armeabi-v7a" ]; then
     LIBARCHES="armeabi-v7a armeabi"
