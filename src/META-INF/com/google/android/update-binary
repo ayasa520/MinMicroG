@@ -6,9 +6,21 @@
 ############################################
 
 umask 022
+##########
+# Presets
+##########
 
 OUTFD=$2
 ZIPFILE="$3";
+
+NVBASE=/data/adb
+TMPDIR=/dev/tmp
+export MAGISK_VER=25.2
+export MAGISK_VER_CODE=25200
+# Detect whether in boot mode
+[ -z $BOOTMODE ] && ps | grep zygote | grep -qv grep && BOOTMODE=true
+[ -z $BOOTMODE ] && ps -A 2>/dev/null | grep zygote | grep -qv grep && BOOTMODE=true
+[ -z $BOOTMODE ] && BOOTMODE=false
 
 ui_print() {
   if $BOOTMODE; then
@@ -342,6 +354,7 @@ install_module() {
   MODNAME=`grep_prop name $TMPDIR/module.prop`
   MODAUTH=`grep_prop author $TMPDIR/module.prop`
   MODPATH=$MODULEROOT/$MODID
+  
 
   # Create mod paths
   rm -rf $MODPATH
@@ -418,15 +431,5 @@ install_module() {
   ui_print "- Done"
 }
 
-##########
-# Presets
-##########
+install_module
 
-# Detect whether in boot mode
-[ -z $BOOTMODE ] && ps | grep zygote | grep -qv grep && BOOTMODE=true
-[ -z $BOOTMODE ] && ps -A 2>/dev/null | grep zygote | grep -qv grep && BOOTMODE=true
-[ -z $BOOTMODE ] && BOOTMODE=false
-
-NVBASE=/data/adb
-TMPDIR=/dev/tmp
-BBDIR="/tmp/busybox";
